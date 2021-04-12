@@ -264,17 +264,17 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
    * Removes fragments from fragment manager that are attached to this container
    */
   private void removeMyFragments() {
-    FragmentTransaction transaction = mFragmentManager.beginTransaction();
     boolean hasFragments = false;
 
     for (Fragment fragment : mFragmentManager.getFragments()) {
       if (fragment instanceof ScreenFragment && ((ScreenFragment) fragment).mScreenView.getContainer() == this) {
+        FragmentTransaction transaction = getOrCreateTransaction();
         transaction.remove(fragment);
         hasFragments = true;
       }
     }
     if (hasFragments) {
-      transaction.commitNowAllowingStateLoss();
+      tryCommitTransaction();
     }
   }
 
@@ -287,7 +287,6 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     // attempt to reattach previously registered fragments that are not removed
     if (mFragmentManager != null && !mFragmentManager.isDestroyed()) {
       removeMyFragments();
-      mFragmentManager.executePendingTransactions();
     }
 
     if (mParentScreenFragment != null) {
